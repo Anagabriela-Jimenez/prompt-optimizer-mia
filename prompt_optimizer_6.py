@@ -43,10 +43,17 @@ class OptimizationResult:
 
 class PromptOptimizer:
     def __init__(self):
-        # Obtener API key del archivo .env
-        self.api_key = os.getenv("OPENAI_API_KEY")
+        # Obtener API key
+        try:
+            # Para Streamlit Cloud (usando secrets)
+            self.api_key = st.secrets["OPENAI_API_KEY"]
+        except:
+            # Para desarrollo local (usando .env)
+            load_dotenv()
+            self.api_key = os.getenv("OPENAI_API_KEY")
+            
         if not self.api_key:
-            raise ValueError("OPENAI_API_KEY no encontrada en el archivo .env")
+            raise ValueError("OPENAI_API_KEY no encontrada en secrets o .env")
         
         self.client = OpenAI(api_key=self.api_key)
     
@@ -661,4 +668,5 @@ def display_results(result: OptimizationResult):
         )
 
 if __name__ == "__main__":
+
     main()
